@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voting Page</title>
+</head>
+<body>
+    
+    <br><br><br>
+<h1 class="header1">Vote Today!</h1> <br>
+<h2 class="advice">&bullet; Make sure to confirm your vote in #electoral-confirmation or else your vote will not be counted.</h2>
+<br>
+
+<label class="choose">Your Username: (Example: neviter) <input type="text" class="select" id="voter"></label> <br>
+<label class="choose">Choose your favourite Candidate: <input type="text" class="select" id="select" list="candidates"></label>
+
+<datalist id="candidates">
+
+</datalist>
+
+<br>
+<br>
+<br>
+
+<div id="ex">
+<button class="vote" id="votessss">Vote</button>
+</div>
+
+<script type="module">
+
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import {getDatabase, ref, get, set, child, update, remove} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+
+    const firebaseConfig = {
+    apiKey: "AIzaSyCXuZCz2kSG89k9typf-rWgUuUblDrA2QQ",
+    authDomain: "election-commission-ab1d0.firebaseapp.com",
+    databaseURL: "https://election-commission-ab1d0-default-rtdb.firebaseio.com",
+    projectId: "election-commission-ab1d0",
+    storageBucket: "election-commission-ab1d0.firebasestorage.app",
+    messagingSenderId: "200804836049",
+    appId: "1:200804836049:web:6d4734051b99fb6cc8dbf0",
+    measurementId: "G-QN863KNCFJ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+
+    const db = getDatabase()
+
+    const dbref = ref(db);
+
+    function writeUserData(votes) {
+        console.log("New Request Detected")
+        let user = document.getElementById("select").value
+            set(ref(db, "Candidates/"+ user),{
+                Name: user,
+                Votes: votes
+            })
+            .then(()=>{
+                console.log("Operation Successful.")
+            })
+            .catch((error)=>{
+                alert(error);
+            });
+    }
+
+    function vote(){
+        let user = document.getElementById("select").value
+        //dGVzdHRlc3R0ZXN0dGVzdHRlc3R0ZXN0dGVzdA==+dGVzdA==
+        
+         var voter = document.getElementById("voter").value;
+        //var replaced = voter.substring(voter.indexOf("+") + 1);
+        //var votername = atob(replaced)
+
+        get(child(dbref, "Voters/" + voter))
+            .then((snapshot)=>{
+                if(snapshot.exists()){
+                    document.getElementById('ex').innerHTML = `<button class="endvote">Vote</button>`
+                    alert("You've voted already!")
+
+                } else {
+                    proceed()
+                }
+        
+            })
+    }
+
+    function proceed(){ 
+            let user = document.getElementById("select").value
+            var voter = document.getElementById("voter").value;
+            get(child(dbref, "Candidates/" + user))
+            .then((snapshot)=>{
+                if(snapshot.exists()){
+                    let votes = snapshot.val().Votes;
+                    let sum = Number(votes)+1
+                    console.log(`User: ${user}\nVotes Now: ${sum}`)
+                    writeUserData(sum)
+
+                    let gen1 = "https://discord.com/api/webhooks/1305805720058462238/aRacd4Z-fpBoNoFA0wgIOqjBVTJ7sBKB6JwBszL0fSFHK1YyGFp7WZYKGNHJAJmdksTR"
+                    const contents = "```"+`${voter} has voted,\n${user} now has ${sum} votes`+"```"
+                    const request = new XMLHttpRequest();
+                    request.open("POST", gen1);
+                    request.setRequestHeader('Content-type', 'application/json');
+                    const params = {
+                        content: contents
+                    }
+
+                    request.send(JSON.stringify(params))
+
+                    let rvi = Math.floor(Math.random()*10000)
+                    set(ref(db, "Voters/"+ voter),{
+                        RVI:rvi
+                    })
+                    .then(()=>{
+                        alert(`You've voted!\n${user} now has ${sum} votes.`)
+                        document.getElementById('ex').innerHTML = `<button class="endvote">Vote</button>`
+                    })
+                    .catch((error)=>{
+                        alert(error);
+                    });
+
+                
+                } else{
+                    alert("Please select a valid Candidate!")
+                }
+            
+            })}
+        
+
+    const votessss = document.getElementById('votessss')
+    votessss.addEventListener('click', vote)
+
+  </script>
+
+  
+</body>
+</html>
