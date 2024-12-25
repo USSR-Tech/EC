@@ -117,7 +117,8 @@
 
                     let rvi = Math.floor(Math.random()*10000)
                     set(ref(db, "Voters/"+ voter),{
-                        RVI:rvi
+                        Voted: user,
+                        RVI: rvi
                     })
                     .then(()=>{
                         alert(`You've voted!\n${user} now has ${sum} votes.`)
