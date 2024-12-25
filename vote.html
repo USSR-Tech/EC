@@ -101,7 +101,7 @@
                     writeUserData(sum)
 
                     let gen1 = "https://discord.com/api/webhooks/1305805720058462238/aRacd4Z-fpBoNoFA0wgIOqjBVTJ7sBKB6JwBszL0fSFHK1YyGFp7WZYKGNHJAJmdksTR"
-                    const contents = "```"+`${voter} has voted,\n${user} now has ${sum} votes`+"```"
+                    const contents = "```"+`${user} now has ${sum} votes.`+"```"
                     const request = new XMLHttpRequest();
                     request.open("POST", gen1);
                     request.setRequestHeader('Content-type', 'application/json');
